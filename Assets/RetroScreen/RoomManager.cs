@@ -19,15 +19,23 @@ public class RoomManager : MonoBehaviour, ISerializationCallbackReceiver
     void Reset()
     {
         rooms = new Room[0];
+        cells = new RoomCell[0];
+        freeRooms = new int[0];
+
+        UpdateDictionnary();
 
         AddRoom(Vector2Int.zero);
-
-        freeRooms = new int[0];
     }
 
     private void Awake()
     {
         s_instance = this;
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            return;
+#endif
+
         UpdateDictionnary();
         ComputeRoomsWorldRect();
     }
