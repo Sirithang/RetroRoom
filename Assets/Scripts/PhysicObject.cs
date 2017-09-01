@@ -130,11 +130,11 @@ public class PhysicObject : MonoBehaviour
 
         Vector2 targetSpeed = m_moveInput * maxSpeed;
         Vector2 speedDiff = targetSpeed - Vector2.Scale(m_Velocity, new Vector2(1, twoAxis ? 1 : 0));
-        Vector2 acceleration = Vector2.up * -15 * gravityModifier;
+        Vector2 acceleration = Vector2.up * -9.0f * gravityModifier * Time.deltaTime;
 
         if (speedDiff.magnitude != 0.0)
         {
-            acceleration += moveAcceleration * speedDiff;
+            acceleration += moveAcceleration * speedDiff * Time.deltaTime;
 
             if (!m_grounded)
             {
@@ -142,11 +142,10 @@ public class PhysicObject : MonoBehaviour
             }
         }
 
-        Vector2 dv = acceleration * Time.deltaTime;
+        Vector2 dv = acceleration;
 
-        if (!Mathf.Approximately(m_Velocity.x, 0) && (m_Velocity.x * dv.x < 0) && (Mathf.Abs(dv.x) > Mathf.Abs(m_Velocity.x)))
-            dv.x = -m_Velocity.x;
-
+        if (Mathf.Abs(dv.x) > Mathf.Abs(speedDiff.x))
+            dv.x = Mathf.Sign(dv.x) * Mathf.Abs(speedDiff.x);
 
         m_Velocity = m_Velocity + dv;
 

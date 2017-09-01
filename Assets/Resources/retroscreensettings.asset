@@ -13,4 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 160
   height: 144
-  pixelPerUnits: 32
+  pixelPerUnits: 16

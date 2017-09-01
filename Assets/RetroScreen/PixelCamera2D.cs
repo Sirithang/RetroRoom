@@ -55,7 +55,7 @@ public class PixelCamera2D : MonoBehaviour
 
         Vector3 position = follow.position - Vector3.forward * 5.0f;
 
-        Rect cameraRect = new Rect(position.x - _camera.orthographicSize * _camera.aspect, position.y * _camera.orthographicSize, _camera.orthographicSize * 2.0f * _camera.aspect, _camera.orthographicSize * 2.0f);
+        Rect cameraRect = new Rect(position.x - _camera.orthographicSize * _camera.aspect, position.y - _camera.orthographicSize, _camera.orthographicSize * 2.0f * _camera.aspect, _camera.orthographicSize * 2.0f);
 
         if(currentRoom != -1)
         {
