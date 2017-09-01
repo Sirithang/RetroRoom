@@ -158,10 +158,10 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.21479501
-    y: 0.04278075
-    width: 0.57040995
-    height: 0.91265595
+    x: 0.2480315
+    y: 0.08489209
+    width: 0.503937
+    height: 0.82877696
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -189,7 +189,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 397108792}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalPosition: {x: 4.45, y: 1.29, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -206,6 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b905a98807db4ee4e9610b2aaab0c3f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  follow: {fileID: 1271459353}
 --- !u!1 &420001888
 GameObject:
   m_ObjectHideFlags: 0
@@ -249,96 +250,210 @@ MonoBehaviour:
   rooms:
   - arrayIdx: 0
     cell: 0
-    size: {x: 1, y: 1}
+    size: {x: 0, y: 0}
+    worldRect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
   - arrayIdx: 1
     cell: 1
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 0
+      y: 4.5
+      width: 5
+      height: 4.5
   - arrayIdx: 2
     cell: 2
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 5
+      y: 4.5
+      width: 5
+      height: 4.5
   - arrayIdx: 3
-    cell: 3
+    cell: 14
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: -5
+      y: 0
+      width: 5
+      height: 4.5
   - arrayIdx: 4
-    cell: 4
+    cell: 0
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 5
+      height: 4.5
   - arrayIdx: 5
-    cell: 5
-    size: {x: 1, y: 1}
-  - arrayIdx: 6
     cell: 6
-    size: {x: 1, y: 1}
+    size: {x: 2, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 5
+      y: -4.5
+      width: 10
+      height: 4.5
+  - arrayIdx: 6
+    cell: 4
+    size: {x: 1, y: 3}
+    worldRect:
+      serializedVersion: 2
+      x: 10
+      y: 0
+      width: 5
+      height: 13.5
   - arrayIdx: 7
-    cell: 7
+    cell: 12
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 15
+      y: 9
+      width: 5
+      height: 4.5
   - arrayIdx: 8
+    cell: 9
+    size: {x: 2, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 15
+      y: 4.5
+      width: 10
+      height: 4.5
+  - arrayIdx: 9
     cell: 8
     size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 5
+      y: 0
+      width: 5
+      height: 4.5
+  - arrayIdx: 10
+    cell: 10
+    size: {x: 1, y: 1}
+    worldRect:
+      serializedVersion: 2
+      x: 15
+      y: 0
+      width: 5
+      height: 4.5
   cells:
   - coordinate: {x: 0, y: 0}
     arrayIdx: 0
-    room: 0
+    room: 4
     top: 1
-    right: 8
-    down: 7
-    left: -1
+    right: 9
+    down: -1
+    left: 3
   - coordinate: {x: 0, y: 1}
     arrayIdx: 1
     room: 1
     top: -1
     right: 2
-    down: 0
+    down: 4
     left: -1
   - coordinate: {x: 1, y: 1}
     arrayIdx: 2
     room: 2
     top: -1
-    right: 3
-    down: 8
+    right: 6
+    down: 9
     left: 1
   - coordinate: {x: 2, y: 1}
     arrayIdx: 3
-    room: 3
-    top: -1
-    right: -1
-    down: 4
+    room: 6
+    top: 6
+    right: 8
+    down: 6
     left: 2
   - coordinate: {x: 2, y: 0}
     arrayIdx: 4
-    room: 4
-    top: 3
-    right: -1
+    room: 6
+    top: 6
+    right: 10
     down: 5
-    left: 8
+    left: 9
   - coordinate: {x: 2, y: -1}
     arrayIdx: 5
     room: 5
-    top: 4
+    top: 6
     right: -1
     down: -1
-    left: 6
+    left: 5
   - coordinate: {x: 1, y: -1}
     arrayIdx: 6
-    room: 6
-    top: 8
+    room: 5
+    top: 9
     right: 5
     down: -1
-    left: 7
+    left: -1
   - coordinate: {x: 0, y: -1}
     arrayIdx: 7
-    room: 7
-    top: 0
-    right: 6
+    room: -1
+    top: 4
+    right: 5
     down: -1
     left: -1
   - coordinate: {x: 1, y: 0}
     arrayIdx: 8
-    room: 8
+    room: 9
     top: 2
-    right: 4
+    right: 6
+    down: 5
+    left: 4
+  - coordinate: {x: 3, y: 1}
+    arrayIdx: 9
+    room: 8
+    top: 7
+    right: 8
+    down: 10
+    left: 6
+  - coordinate: {x: 3, y: 0}
+    arrayIdx: 10
+    room: 10
+    top: 8
+    right: -1
+    down: -1
+    left: 6
+  - coordinate: {x: 2, y: 2}
+    arrayIdx: 11
+    room: 6
+    top: -1
+    right: 7
     down: 6
-    left: 0
-  freeRooms: 
+    left: -1
+  - coordinate: {x: 3, y: 2}
+    arrayIdx: 12
+    room: 7
+    top: -1
+    right: -1
+    down: 8
+    left: 6
+  - coordinate: {x: 4, y: 1}
+    arrayIdx: 13
+    room: 8
+    top: -1
+    right: -1
+    down: -1
+    left: 8
+  - coordinate: {x: -1, y: 0}
+    arrayIdx: 14
+    room: 3
+    top: -1
+    right: 4
+    down: -1
+    left: -1
+  freeRooms: 00000000
 --- !u!1 &901802399
 GameObject:
   m_ObjectHideFlags: 0
@@ -933,7 +1048,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1271459350}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.79, y: 1.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

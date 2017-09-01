@@ -9,20 +9,76 @@ using UnityEditor;
 [RequireComponent(typeof(Camera))]
 public class PixelCamera2D : MonoBehaviour
 {
+    public Transform follow;
+
     protected int previousScreenWidth = 0;
     protected int previousScreenHeight = 0;
 
     protected Camera _camera;
 
+    protected int currentRoom = -1;
+
     private void Start()
     {
         Setup();
+
+        RoomCell cell = RoomManager.Instance.GetCellFromWorld(follow.transform.position);
+
+        if (cell == null)
+            Debug.LogError("target outside of the world");
+        else
+            currentRoom = cell.room;
     }
 
     private void Update()
     {
         if (Screen.width != previousScreenWidth || Screen.height != previousScreenHeight)
             Setup();
+    }
+
+    private void LateUpdate()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            return;
+#endif
+
+        if (follow == null)
+            return;
+
+        RoomCell cell = RoomManager.Instance.GetCellFromWorld(follow.transform.position);
+
+        if (cell == null)
+            Debug.LogError("target outside of the world");
+        else
+            currentRoom = cell.room;
+
+        Vector3 position = follow.position - Vector3.forward * 5.0f;
+
+        Rect cameraRect = new Rect(position.x - _camera.orthographicSize * _camera.aspect, position.y * _camera.orthographicSize, _camera.orthographicSize * 2.0f * _camera.aspect, _camera.orthographicSize * 2.0f);
+
+        if(currentRoom != -1)
+        {
+            Rect roomRect = RoomManager.Instance.rooms[currentRoom].worldRect;
+
+            if (cameraRect.xMin < roomRect.xMin)
+                cameraRect.position = new Vector2(roomRect.xMin, cameraRect.position.y);
+
+            if(cameraRect.yMin < roomRect.yMin)
+                cameraRect.position = new Vector2(cameraRect.position.x, roomRect.yMin);
+
+            if (cameraRect.xMax > roomRect.xMax)
+                cameraRect.position = new Vector2(roomRect.xMax - cameraRect.width, cameraRect.position.y);
+
+            if (cameraRect.yMax > roomRect.yMax)
+                cameraRect.position = new Vector2(cameraRect.position.x, roomRect.yMax - cameraRect.height);
+
+            float z = position.z;
+            position = cameraRect.center;
+            position.z = z;
+        }
+
+        transform.position = position;
     }
 
     public void Setup()
