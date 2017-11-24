@@ -17,6 +17,7 @@ public class PixelCamera2D : MonoBehaviour
     protected Camera _camera;
 
     protected int currentRoom = -1;
+    protected float _pixelSize;
 
     private void Start()
     {
@@ -78,6 +79,9 @@ public class PixelCamera2D : MonoBehaviour
             position.z = z;
         }
 
+        position.x = Mathf.RoundToInt(position.x / _pixelSize) * _pixelSize;
+        position.y = Mathf.RoundToInt(position.y / _pixelSize) * _pixelSize;
+
         transform.position = position;
     }
 
@@ -128,6 +132,8 @@ public class PixelCamera2D : MonoBehaviour
 
         _camera.pixelRect = screenRect;
         _camera.orthographicSize = (heighToUse / (float)ppu) * 0.5f;
+
+        _pixelSize = 1.0f / RetroScreenSettings.instance.pixelPerUnits;
     }
 }
 
