@@ -16,6 +16,7 @@ public class RoomManager : MonoBehaviour, ISerializationCallbackReceiver
     protected Dictionary<Vector2Int, RoomCell> _cells;
     protected Vector2 _roomWorldSize;
 
+#if UNITY_EDITOR
     void Reset()
     {
         rooms = new Room[0];
@@ -26,6 +27,7 @@ public class RoomManager : MonoBehaviour, ISerializationCallbackReceiver
 
         AddRoom(Vector2Int.zero);
     }
+#endif
 
     private void Awake()
     {

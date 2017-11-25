@@ -9,7 +9,20 @@ using UnityEditor;
 [RequireComponent(typeof(Camera))]
 public class PixelCamera2D : MonoBehaviour
 {
+    public enum ScreenTransitionState
+    {
+        START,
+        END
+    }
+    public delegate void ScreenTransition(ScreenTransitionState state);
+
+    static protected PixelCamera2D s_instance = null;
+    static public PixelCamera2D Instance { get { return s_instance; } }
+
     public Transform follow;
+    public float transitionSpeed = 10.0f;
+
+    public ScreenTransition onScreenTransition = null;
 
     protected int previousScreenWidth = 0;
     protected int previousScreenHeight = 0;
@@ -17,10 +30,21 @@ public class PixelCamera2D : MonoBehaviour
     protected Camera _camera;
 
     protected int currentRoom = -1;
+    protected bool _inTransition = false;
+
+    private void Awake()
+    {
+        s_instance = this;
+    }
 
     private void Start()
     {
         Setup();
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            return;
+#endif
 
         RoomCell cell = RoomManager.Instance.GetCellFromWorld(follow.transform.position);
 
@@ -51,7 +75,12 @@ public class PixelCamera2D : MonoBehaviour
         if (cell == null)
             Debug.LogError("target outside of the world");
         else
+        {
+            _inTransition = true;
             currentRoom = cell.room;
+            if(onScreenTransition != null)
+                onScreenTransition(ScreenTransitionState.START);
+        }
 
         Vector3 position = follow.position - Vector3.forward * 5.0f;
 
@@ -78,7 +107,20 @@ public class PixelCamera2D : MonoBehaviour
             position.z = z;
         }
 
-        transform.position = position;
+        if (_inTransition)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, position, transitionSpeed * Time.deltaTime);
+            if(position == transform.position)
+            {
+                _inTransition = false;
+                if (onScreenTransition != null)
+                    onScreenTransition(ScreenTransitionState.END);
+            }
+        }
+        else
+        {
+            transform.position = position;
+        }
     }
 
     public void Setup()

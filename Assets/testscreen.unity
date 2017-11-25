@@ -158,10 +158,10 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.25
-    y: 0.091937765
-    width: 0.5
-    height: 0.8147101
+    x: 0.21479501
+    y: 0.04278075
+    width: 0.57040995
+    height: 0.91265595
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -207,6 +207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   follow: {fileID: 1271459353}
+  transitionSpeed: 50
 --- !u!1 &420001888
 GameObject:
   m_ObjectHideFlags: 0
@@ -2471,6 +2472,7 @@ MonoBehaviour:
   maxSpeed: 0.1
   gravityModifier: 1
   twoAxis: 0
+  simulated: 1
 --- !u!1 &1376161015
 GameObject:
   m_ObjectHideFlags: 0

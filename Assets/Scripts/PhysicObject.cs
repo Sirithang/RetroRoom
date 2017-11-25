@@ -16,6 +16,7 @@ public class PhysicObject : MonoBehaviour
     public float gravityModifier = 1;
 
     public bool twoAxis = false;
+    public bool simulated = true;
 
     public bool grounded { get { return m_grounded; } }
 
@@ -121,6 +122,9 @@ public class PhysicObject : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!simulated)
+            return;
+
         if (m_onLadder)
         {
             LadderMovement();

@@ -47,11 +47,21 @@ public class PlayerInput : MonoBehaviour
         m_animator = GetComponent<Animator>();
         m_po = GetComponent<PhysicObject>();
 
+        PixelCamera2D.Instance.onScreenTransition += ScreenTransition;
+
         if(m_po != null)
         {
             m_po.inputCallback += HandleInput;
             m_po.collisionCallback += ReactCollision;
         }
+    }
+
+    void ScreenTransition(PixelCamera2D.ScreenTransitionState state)
+    {
+        if (state == PixelCamera2D.ScreenTransitionState.START)
+            m_po.simulated = false;
+        else
+            m_po.simulated = true;
     }
 
     void OnDisable()
@@ -61,6 +71,8 @@ public class PlayerInput : MonoBehaviour
             m_po.inputCallback -= HandleInput;
             m_po.collisionCallback -= ReactCollision;
         }
+
+        PixelCamera2D.Instance.onScreenTransition -= ScreenTransition;
     }
 
     void Start()
