@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class PhysicObject : MonoBehaviour
 { 
+    //Any monobehaviour implementing that interface will get a callback when a physic object collide with it.
+    public interface ICollisionReceiver
+    {
+        //careful, rememebr the hit received is from THE OTHER OBJECT perspective (normal will be other way you expect them)
+        void ReceiveContact(PhysicObject origin, RaycastHit2D hit);
+    }
+
     public delegate void InputDelegate();
     public delegate void CollisionDelegate(ref List<RaycastHit2D> contacts);
 
@@ -15,83 +22,56 @@ public class PhysicObject : MonoBehaviour
     public float maxSpeed = 7;
     public float gravityModifier = 1;
 
-    public bool twoAxis = false;
-    public bool simulated = true;
+    public bool grounded { get { return _grounded; } }
 
-    public bool grounded { get { return m_grounded; } }
+    public Vector2 velocity { get { return _Velocity; } set { _Velocity = value; } }
+    public Vector2 moveInput { get { return _moveInput; } set { _moveInput = value; } }
+    public Rigidbody2D rigidbody2d {  get { return _Rigidbody; } }
+    public Collider2D collider2d { get { return _collider; } }
 
-    public Vector2 velocity { get { return m_Velocity; } set { m_Velocity = value; } }
-    public Vector2 moveInput { get { return m_moveInput; } set { m_moveInput = value; } }
-    public Rigidbody2D rigidbody2d {  get { return m_Rigidbody; } }
+    protected Rigidbody2D _Rigidbody = null;
+    protected Collider2D _collider = null;
+    protected SpriteRenderer _Renderer = null;
 
-    protected Rigidbody2D m_Rigidbody = null;
-    protected Collider2D m_collider = null;
-    protected SpriteRenderer m_Renderer = null;
+    protected Vector2 _Velocity = Vector2.zero;
+    protected Vector2 _moveInput = Vector2.zero;
+    protected bool _grounded = false;
 
-    protected Vector2 m_Velocity = Vector2.zero;
-    protected Vector2 m_moveInput = Vector2.zero;
-    protected bool m_grounded = false;
-
-    RaycastHit2D[] m_hitBuffer = new RaycastHit2D[16];
-    List<RaycastHit2D> m_hitBufferList = new List<RaycastHit2D>(16);
-    protected ContactFilter2D m_filter = new ContactFilter2D();
-
-    protected bool m_onLadder = false;
-
-    protected Collider2D[] m_colliderList = null;
-    protected bool[] m_colliderEnabledSave = null;
+    RaycastHit2D[] _hitBuffer = new RaycastHit2D[16];
+    List<RaycastHit2D> _hitBufferList = new List<RaycastHit2D>(16);
+    protected ContactFilter2D _filter = new ContactFilter2D();
 
     protected Vector2 targetPosition = Vector2.zero;
     protected Vector2 correction;
     protected Vector2 groundNormal = Vector2.up;
 
-    protected int m_usableLayer;
-    protected int m_pickupLayer;
+    protected int _usableLayer;
+    protected int _pickupLayer;
 
     void OnEnable()
     {
-        m_Rigidbody = GetComponent<Rigidbody2D>();
-        m_collider = GetComponent<Collider2D>();
-        m_Renderer = GetComponent<SpriteRenderer>();
-
-        if (m_colliderList != null)
-        {
-            for (int i = 0; i < m_colliderList.Length; ++i)
-            {
-                m_colliderList[i].enabled = m_colliderEnabledSave[i];
-            }
-        }
-
-        m_colliderList = GetComponentsInChildren<Collider2D>();
-        if(m_colliderList != null)
-            m_colliderEnabledSave = new bool[m_colliderList.Length];
-
+        _Rigidbody = GetComponent<Rigidbody2D>();
+        _collider = GetComponent<Collider2D>();
+        _Renderer = GetComponent<SpriteRenderer>();
     }
 
     private void OnDisable()
     {
-        if (m_colliderList != null)
-        {
-            for (int i = 0; i < m_colliderList.Length; ++i)
-            {
-                m_colliderEnabledSave[i] = m_colliderList[i].enabled;
-                m_colliderList[i].enabled = false;
-            }
-        }
+
     }
 
     // Use this for initialization
     void Start()
     {
-        m_usableLayer = LayerMask.NameToLayer("Usable");
-        m_pickupLayer = LayerMask.NameToLayer("Pickup");
+        _usableLayer = LayerMask.NameToLayer("Usable");
+        _pickupLayer = LayerMask.NameToLayer("Pickup");
 
-        m_filter.useTriggers = false;
+        _filter.useTriggers = false;
     }
 
     void Update()
     {
-        m_moveInput = Vector2.zero;
+        _moveInput = Vector2.zero;
 
         if(inputCallback != null)
             inputCallback.Invoke();
@@ -106,41 +86,33 @@ public class PhysicObject : MonoBehaviour
 
     public void AddForce(Vector2 force)
     {
-        m_Velocity += force;
+        _Velocity += force;
     }
 
     public void SetVelocity(Vector2 velocity)
     {
-        m_Velocity = velocity;
+        _Velocity = velocity;
     }
 
     public Vector2 GetVelocity()
     {
-        return m_Velocity;
+        return _Velocity;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!simulated)
-            return;
-
-        if (m_onLadder)
-        {
-            LadderMovement();
-        }
-
         const float shell = 0.01f;
 
-        Vector2 targetSpeed = m_moveInput * maxSpeed;
-        Vector2 speedDiff = targetSpeed - Vector2.Scale(m_Velocity, new Vector2(1, twoAxis ? 1 : 0));
-        Vector2 acceleration = Vector2.up * -9.0f * gravityModifier * Time.deltaTime;
+        Vector2 targetSpeed = _moveInput * maxSpeed;
+        Vector2 speedDiff = targetSpeed - Vector2.Scale(_Velocity, new Vector2(1, 0));
+        Vector2 acceleration = Vector2.up * LevelSettings.Instance.gravity * gravityModifier * Time.deltaTime;
 
         if (speedDiff.magnitude != 0.0)
         {
             acceleration += moveAcceleration * speedDiff * Time.deltaTime;
 
-            if (!m_grounded)
+            if (!_grounded)
             {
                 acceleration.x = airAccelerationFactor * acceleration.x;
             }
@@ -151,26 +123,11 @@ public class PhysicObject : MonoBehaviour
         if (Mathf.Abs(dv.x) > Mathf.Abs(speedDiff.x))
             dv.x = Mathf.Sign(dv.x) * Mathf.Abs(speedDiff.x);
 
-        m_Velocity = m_Velocity + dv;
+        _Velocity = _Velocity + dv;
 
-        Vector2 framedAcceleration = new Vector2(groundNormal.y, -groundNormal.x) * m_Velocity.x;
+        Vector2 framedAcceleration = new Vector2(groundNormal.y, -groundNormal.x) * _Velocity.x * Time.deltaTime;
 
-        // === TEMP FIX  : DISABLE TRIGGER COLLIDER AS THEY ARE USED IN THE CASTING
-
-        if (m_colliderList != null)
-        {
-            for (int i = 0; i < m_colliderList.Length; ++i)
-            {
-                if (m_colliderList[i].isTrigger)
-                {
-                    m_colliderEnabledSave[i] = m_colliderList[i].enabled;
-                    m_colliderList[i].enabled = false;
-                }
-            }
-        }
-        // ===
-
-        m_grounded = false;
+        _grounded = false;
 
 
         //do the X movement first
@@ -178,106 +135,100 @@ public class PhysicObject : MonoBehaviour
         float dist = framedAcceleration.magnitude;
         if (dist > 0.001f)
         {
-            int count = m_Rigidbody.Cast(xMove.normalized, m_filter, m_hitBuffer, dist + shell);
-            m_hitBufferList.Clear();
+            int count = _Rigidbody.Cast(xMove.normalized, _filter, _hitBuffer, dist + shell);
+            _hitBufferList.Clear();
             for (int i = 0; i < count; ++i)
-                m_hitBufferList.Add(m_hitBuffer[i]);
+                _hitBufferList.Add(_hitBuffer[i]);
 
             if (collisionCallback != null)
-                collisionCallback.Invoke(ref m_hitBufferList);
+                collisionCallback.Invoke(ref _hitBufferList);
 
-            for (int i = 0; i < m_hitBufferList.Count; ++i)
+            for (int i = 0; i < _hitBufferList.Count; ++i)
             {
-                Vector2 cntNorm = m_hitBufferList[i].normal;
+                ICollisionReceiver physObj = _hitBufferList[i].collider.GetComponent<ICollisionReceiver>();
+                if (physObj != null)
+                    physObj.ReceiveContact(this, _hitBufferList[i]);
+
+                Vector2 cntNorm = _hitBufferList[i].normal;
 
                 if (cntNorm.y > 0.7f)
                 {
-                    m_grounded = true;
+                    _grounded = true;
                 }
 
-                float proj = Vector2.Dot(m_Velocity, cntNorm);
+                float proj = Vector2.Dot(_Velocity, cntNorm);
 
                 if (proj < 0)
-                    m_Velocity = m_Velocity - proj * cntNorm;
+                    _Velocity = _Velocity - proj * cntNorm;
 
-                float modifDist = m_hitBufferList[i].distance - shell;
+                float modifDist = _hitBufferList[i].distance - shell;
                 dist = modifDist < dist ? modifDist : dist;
             }
-            m_Rigidbody.position = (m_Rigidbody.position + xMove.normalized * dist);
+            _Rigidbody.position = (_Rigidbody.position + xMove.normalized * dist);
         }
 
 
         //do the Y movement second
-        Vector2 yMove = Vector2.up * m_Velocity.y;// new Vector2(0, dp.y);
+        Vector2 yMove = Vector2.up * _Velocity.y * Time.deltaTime;// new Vector2(0, dp.y);
         dist = yMove.magnitude; //Mathf.Abs(dp.y);
         if (dist > 0.001f)
         {
-            int count = m_Rigidbody.Cast(yMove.normalized, m_filter, m_hitBuffer, dist + shell);
-            m_hitBufferList.Clear();
+            int count = _Rigidbody.Cast(yMove.normalized, _filter, _hitBuffer, dist + shell);
+            _hitBufferList.Clear();
             for (int i = 0; i < count; ++i)
-                m_hitBufferList.Add(m_hitBuffer[i]);
+                _hitBufferList.Add(_hitBuffer[i]);
 
             if (collisionCallback != null)
-                collisionCallback.Invoke(ref m_hitBufferList);
+                collisionCallback.Invoke(ref _hitBufferList);
 
-            for (int i = 0; i < m_hitBufferList.Count; ++i)
+            for (int i = 0; i < _hitBufferList.Count; ++i)
             {
-                Vector2 cntNorm = m_hitBufferList[i].normal;
+                ICollisionReceiver physObj = _hitBufferList[i].collider.GetComponent<ICollisionReceiver>();
+                if (physObj != null)
+                    physObj.ReceiveContact(this, _hitBufferList[i]);
+
+                Vector2 cntNorm = _hitBufferList[i].normal;
 
                 if (cntNorm.y > 0.7f)
                 {
                     groundNormal = cntNorm;
-                    m_grounded = true;
+                    _grounded = true;
                     cntNorm.x = 0;
                 }
 
-                float proj = Vector2.Dot(m_Velocity, cntNorm);
+                float proj = Vector2.Dot(_Velocity, cntNorm);
 
                 if (proj < 0)
-                    m_Velocity = m_Velocity - proj * cntNorm;
+                    _Velocity = _Velocity - proj * cntNorm;
 
-                float modifDist = m_hitBufferList[i].distance - shell;
+                float modifDist = _hitBufferList[i].distance - shell;
                 dist = modifDist < dist ? modifDist : dist;
             }
         }
 
-        // === TEMP FIX  : DISABLE TRIGGER COLLIDER AS THEY ARE USED IN THE CASTING
-
-        if (m_colliderList != null)
-        {
-            for (int i = 0; i < m_colliderList.Length; ++i)
-            {
-                if (m_colliderList[i].isTrigger)
-                {
-                    m_colliderList[i].enabled = m_colliderEnabledSave[i];
-                }
-            }
-        }
-        // ===
-
-        m_Rigidbody.position = (m_Rigidbody.position + yMove.normalized * dist);
+        _Rigidbody.position = (_Rigidbody.position + yMove.normalized * dist);
     }
 
     void LadderMovement()
     {
         float speed = maxSpeed * 0.2f;
 
-        Vector2 move = m_moveInput;
+        Vector2 move = _moveInput;
         move.x = 0;
 
-        Vector2 targetPosition = m_Rigidbody.position + move * speed * Time.deltaTime;
+        Vector2 targetPosition = _Rigidbody.position + move * speed * Time.deltaTime;
 
-        m_Rigidbody.position = targetPosition;
+        _Rigidbody.position = targetPosition;
     }
 
     public Vector2 GetPosition()
     {
-        return m_Rigidbody.position;
+        return _Rigidbody.position;
     }
 
     public void TeleportTo(Vector2 position, bool resetVelocity)
     {
-        m_Rigidbody.position = position;
-        if (resetVelocity) m_Velocity = Vector2.zero;
+        _Rigidbody.position = position;
+        if (resetVelocity) _Velocity = Vector2.zero;
     }
 }
