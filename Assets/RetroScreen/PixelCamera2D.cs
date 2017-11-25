@@ -126,8 +126,8 @@ public class PixelCamera2D : MonoBehaviour
             position.z = z;
         }
 
-        position.x = Mathf.RoundToInt(position.x / _pixelSize) * _pixelSize;
-        position.y = Mathf.RoundToInt(position.y / _pixelSize) * _pixelSize;
+        //position.x = Mathf.RoundToInt(position.x / _pixelSize) * _pixelSize;
+        //position.y = Mathf.RoundToInt(position.y / _pixelSize) * _pixelSize;
 
         if (_inTransition)
         {

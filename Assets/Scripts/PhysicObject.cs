@@ -102,7 +102,7 @@ public class PhysicObject : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        const float shell = 0.01f;
+        const float shell = 0.005f;
 
         Vector2 targetSpeed = _moveInput * maxSpeed;
         Vector2 speedDiff = targetSpeed - Vector2.Scale(_Velocity, new Vector2(1, 0));
