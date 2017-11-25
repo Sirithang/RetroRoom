@@ -273,6 +273,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   follow: {fileID: 72084916}
+  transitionType: 1
+  freezeTimeDuringTransition: 1
+  transitionSpeed: 10
 --- !u!81 &1093582187
 AudioListener:
   m_ObjectHideFlags: 0
@@ -299,10 +302,10 @@ Camera:
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.2480315
-    y: 0.081277214
-    width: 0.503937
-    height: 0.8359942
+    x: 0.21223022
+    y: 0.039968025
+    width: 0.5755396
+    height: 0.92086333
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -318,6 +321,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10

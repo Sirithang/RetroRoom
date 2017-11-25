@@ -14,12 +14,22 @@ public class PixelCamera2D : MonoBehaviour
         START,
         END
     }
+
+    public enum TransitionType
+    {
+        INSTANT,
+        MOVING,
+        FADE
+    }
+
     public delegate void ScreenTransition(ScreenTransitionState state);
 
     static protected PixelCamera2D s_instance = null;
     static public PixelCamera2D Instance { get { return s_instance; } }
 
     public Transform follow;
+    public TransitionType transitionType;
+    public bool freezeTimeDuringTransition = false;
     public float transitionSpeed = 10.0f;
 
     public ScreenTransition onScreenTransition = null;
@@ -32,6 +42,7 @@ public class PixelCamera2D : MonoBehaviour
     protected int currentRoom = -1;
     protected bool _inTransition = false;
     protected float _pixelSize;
+    protected float _previousTimeScale;
 
     private void Awake()
     {
@@ -75,9 +86,16 @@ public class PixelCamera2D : MonoBehaviour
 
         if (cell == null)
             Debug.LogError("target outside of the world");
-        else
+        else if(cell.room != currentRoom)
         {
-            _inTransition = true;
+            if (transitionType != TransitionType.INSTANT)
+            {
+                _inTransition = true;
+
+                _previousTimeScale = Time.timeScale;
+                Time.timeScale = freezeTimeDuringTransition ? 0.0f : Time.timeScale;
+            }
+
             currentRoom = cell.room;
             if(onScreenTransition != null)
                 onScreenTransition(ScreenTransitionState.START);
@@ -113,12 +131,15 @@ public class PixelCamera2D : MonoBehaviour
 
         if (_inTransition)
         {
-            transform.position = Vector3.MoveTowards(transform.position, position, transitionSpeed * Time.deltaTime);
-            if(position == transform.position)
+            switch(transitionType)
             {
-                _inTransition = false;
-                if (onScreenTransition != null)
-                    onScreenTransition(ScreenTransitionState.END);
+                case TransitionType.MOVING:
+                    MovingTransition(position);
+                    break;
+                case TransitionType.FADE:
+                    break;
+                default:
+                    break;
             }
         }
         else
@@ -176,6 +197,20 @@ public class PixelCamera2D : MonoBehaviour
         _camera.orthographicSize = (heighToUse / (float)ppu) * 0.5f;
 
         _pixelSize = 1.0f / RetroScreenSettings.instance.pixelPerUnits;
+    }
+
+    protected void MovingTransition(Vector3 position)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, position, transitionSpeed * Time.unscaledDeltaTime);
+        if (position == transform.position)
+        {
+            _inTransition = false;
+
+            Time.timeScale = _previousTimeScale;
+
+            if (onScreenTransition != null)
+                onScreenTransition(ScreenTransitionState.END);
+        }
     }
 }
 
