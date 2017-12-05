@@ -22,6 +22,7 @@ public class PlayerInput : MonoBehaviour
     protected bool _previousGrounded = false;
 
     protected RaycastHit2D[] _hitCache = new RaycastHit2D[16];
+    protected List<Collider2D> _currentPlatformEffectors = new List<Collider2D>();
 
     void OnEnable()
     {
@@ -116,18 +117,101 @@ public class PlayerInput : MonoBehaviour
        
     }
  
-    public void ReactCollision(ref List<RaycastHit2D> contacts)
+    public void ReactCollision(ref List<RaycastHit2D> contacts, PhysicObject.CollisionStage stage)
     {
 
-
-        List<GameObject> handledObject = new List<GameObject>();
-
-        for(int i = 0; i < contacts.Count; ++i)
+        if (stage == PhysicObject.CollisionStage.Before)
         {
-            if(contacts[i].collider != null && contacts[i].collider.gameObject.name != "taggedToDelete")
+            PreCollisionTest(ref contacts);
+        }
+        else
+        {
+            for (int i = 0; i < contacts.Count; ++i)
             {
-               
+                RaycastHit2D hit = contacts[i];
+                Vector2 cntNorm = contacts[i].normal;
+
+                if (hit.collider.usedByEffector)
+                {//rely on built in effector to avoid having to code a class that containt exactly the same parameters
+                    PlatformEffector2D effector = hit.collider.GetComponent<PlatformEffector2D>();
+                    if (effector != null && effector.useOneWay)
+                    {
+                        if (HandlePassThroughPlatform(hit, effector, stage))
+                        {
+                            contacts.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                }
             }
         }
+    }
+
+    protected void PreCollisionTest(ref List<RaycastHit2D> contacts)
+    {
+        //we check for all the current paltformer effetor if we are still colliding them
+        for (int i = 0; i < _currentPlatformEffectors.Count; ++i)
+        {
+            bool contained = false; 
+            for (int k = 0; k < contacts.Count; ++k)
+            {
+                if (contacts[k] == _currentPlatformEffectors[i])
+                {
+                    contained = true;
+                    break;
+                }
+            }
+            
+            if (!contained)
+            {
+                _currentPlatformEffectors.RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+    //return true if need to be removed
+    protected bool HandlePassThroughPlatform(RaycastHit2D hit, PlatformEffector2D effector, PhysicObject.CollisionStage stage)
+    {
+        Vector2 cntNorm = hit.normal;
+
+        if (stage == PhysicObject.CollisionStage.XMove)
+        {
+            if (!_currentPlatformEffectors.Contains(hit.collider))
+                _currentPlatformEffectors.Add(hit.collider);
+
+            return true;
+        }
+        else
+        {
+            //only test if we are currently falling AND if we weren't going through that
+            //effector the last frame already. Otherwise we ignore it (as that mean we started falling
+            //before going entierly through it, we would get stuck in it if we weren't ignoring it)
+            if (_po.velocity.y < 0)
+            {
+                if (!_currentPlatformEffectors.Contains(hit.collider))
+                {//if the current list of effector contain that effector, we never passed it completly, 
+                    //don't collide as we would be stuck INSIDE it
+                    float dot = Vector2.Dot(cntNorm, Vector2.up);
+                    if (dot < Mathf.Cos(Mathf.Deg2Rad * effector.surfaceArc * 0.5f))
+                    {// ignore that collision, the normal is outside the angle define
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if(!_currentPlatformEffectors.Contains(hit.collider))
+                    _currentPlatformEffectors.Add(hit.collider);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

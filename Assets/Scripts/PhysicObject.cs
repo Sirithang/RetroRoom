@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Collections;
 
 public class PhysicObject : MonoBehaviour
 { 
@@ -11,8 +14,15 @@ public class PhysicObject : MonoBehaviour
         void ReceiveContact(PhysicObject origin, RaycastHit2D hit);
     }
 
+    public enum CollisionStage
+    {
+        Before,
+        XMove,
+        YMove
+    }
+
     public delegate void InputDelegate();
-    public delegate void CollisionDelegate(ref List<RaycastHit2D> contacts);
+    public delegate void CollisionDelegate(ref List<RaycastHit2D> contacts, CollisionStage stage);
 
     public InputDelegate inputCallback;
     public CollisionDelegate collisionCallback;
@@ -128,28 +138,37 @@ public class PhysicObject : MonoBehaviour
         Vector2 framedAcceleration = new Vector2(groundNormal.y, -groundNormal.x) * _Velocity.x * Time.deltaTime;
 
         _grounded = false;
-
+        
+        int count = _Rigidbody.Cast(Vector2.zero, _filter, _hitBuffer, 0);
+        _hitBufferList.Clear();
+        for (int i = 0; i < count; ++i)
+            _hitBufferList.Add(_hitBuffer[i]);
+        
+        collisionCallback(ref _hitBufferList, CollisionStage.Before); 
 
         //do the X movement first
         Vector2 xMove = framedAcceleration;
         float dist = framedAcceleration.magnitude;
         if (dist > 0.001f)
         {
-            int count = _Rigidbody.Cast(xMove.normalized, _filter, _hitBuffer, dist + shell);
+            count = _Rigidbody.Cast(xMove.normalized, _filter, _hitBuffer, dist + shell);
             _hitBufferList.Clear();
             for (int i = 0; i < count; ++i)
                 _hitBufferList.Add(_hitBuffer[i]);
 
             if (collisionCallback != null)
-                collisionCallback.Invoke(ref _hitBufferList);
+                collisionCallback.Invoke(ref _hitBufferList, CollisionStage.XMove);
 
             for (int i = 0; i < _hitBufferList.Count; ++i)
             {
+                RaycastHit2D hit = _hitBufferList[i];
+                Vector2 cntNorm = hit.normal;
+                
                 ICollisionReceiver physObj = _hitBufferList[i].collider.GetComponent<ICollisionReceiver>();
                 if (physObj != null)
                     physObj.ReceiveContact(this, _hitBufferList[i]);
 
-                Vector2 cntNorm = _hitBufferList[i].normal;
+                
 
                 if (cntNorm.y > 0.7f)
                 {
@@ -173,21 +192,22 @@ public class PhysicObject : MonoBehaviour
         dist = yMove.magnitude; //Mathf.Abs(dp.y);
         if (dist > 0.001f)
         {
-            int count = _Rigidbody.Cast(yMove.normalized, _filter, _hitBuffer, dist + shell);
+            count = _Rigidbody.Cast(yMove.normalized, _filter, _hitBuffer, dist + shell);
             _hitBufferList.Clear();
             for (int i = 0; i < count; ++i)
                 _hitBufferList.Add(_hitBuffer[i]);
 
             if (collisionCallback != null)
-                collisionCallback.Invoke(ref _hitBufferList);
+                collisionCallback.Invoke(ref _hitBufferList, CollisionStage.YMove);
 
             for (int i = 0; i < _hitBufferList.Count; ++i)
             {
+                RaycastHit2D hit = _hitBufferList[i];
+                Vector2 cntNorm = hit.normal;
+                
                 ICollisionReceiver physObj = _hitBufferList[i].collider.GetComponent<ICollisionReceiver>();
                 if (physObj != null)
                     physObj.ReceiveContact(this, _hitBufferList[i]);
-
-                Vector2 cntNorm = _hitBufferList[i].normal;
 
                 if (cntNorm.y > 0.7f)
                 {
@@ -204,8 +224,9 @@ public class PhysicObject : MonoBehaviour
                 float modifDist = _hitBufferList[i].distance - shell;
                 dist = modifDist < dist ? modifDist : dist;
             }
+            
         }
-
+        
         _Rigidbody.position = (_Rigidbody.position + yMove.normalized * dist);
     }
 

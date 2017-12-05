@@ -130,6 +130,8 @@ public class BlobTileEditor : Editor
                     _target.entries[entry].rotation[rotation] = 0;
                 }
             }
+            
+            EditorUtility.SetDirty(target);
         }
 
         //display data for the selected tile

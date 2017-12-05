@@ -48,7 +48,7 @@ public class EnemyController : MonoBehaviour
         _animator.SetFloat(VELOCITYX_HASH, _po.velocity.x);
     }
 
-    protected void HandleCollision(ref List<RaycastHit2D> contacts)
+    protected void HandleCollision(ref List<RaycastHit2D> contacts, PhysicObject.CollisionStage stage)
     {
         foreach (var hit in contacts)
         {
