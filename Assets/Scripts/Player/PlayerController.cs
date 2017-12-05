@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     public bool controlled { get { return _controlled; } set { _controlled = value; } }
 
     public PhysicObject physicObject { get { return _po; } }
+
+    public InputMapping inputKeyboardMapping;
+    public InputMapping inputPadMapping;
 
     public float jumpTakeoffSpeed = 8;
     public float touchJumpTimeout = 0.2f;
@@ -23,6 +27,8 @@ public class PlayerInput : MonoBehaviour
 
     protected RaycastHit2D[] _hitCache = new RaycastHit2D[16];
     protected List<Collider2D> _currentPlatformEffectors = new List<Collider2D>();
+
+    private readonly int JUMP_BUTTON_HASH = InputMapping.NameToHash("Jump");
 
     void OnEnable()
     {
@@ -48,16 +54,6 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
-    }
-
     public void HandleInput()
     {
         Vector2 velocity = _po.velocity;
@@ -67,11 +63,13 @@ public class PlayerInput : MonoBehaviour
 
         if (_controlled)
         {
-
+            KeyCode jumpKeyboardKeycode = inputKeyboardMapping.GetKeyCode(JUMP_BUTTON_HASH);
+            KeyCode jumpPadKeycode = inputPadMapping.GetKeyCode(JUMP_BUTTON_HASH);
+            
             move.x = Input.GetAxis("Horizontal");
             move.y = Input.GetAxis("Vertical");
 
-            if (Input.GetButtonDown("Jump") && (_po.grounded))
+            if ((Input.GetKeyDown(jumpKeyboardKeycode) || Input.GetKeyDown(jumpPadKeycode)) && (_po.grounded))
             {
                 bool jump = true;
 
@@ -82,7 +80,7 @@ public class PlayerInput : MonoBehaviour
                     _po.velocity = velocity;
                 }
             }
-            else if (Input.GetButtonUp("Jump"))
+            else if ((Input.GetKeyDown(jumpKeyboardKeycode) || Input.GetKeyDown(jumpPadKeycode)) )
             {
                 if (_po.velocity.y > 0)
                     _po.velocity = _po.velocity * 0.5f;
@@ -105,16 +103,14 @@ public class PlayerInput : MonoBehaviour
         _animator.SetFloat("velocityX",velocityParam);
         _animator.SetFloat("velocityY", move.y);
         _animator.SetFloat("verticalSpeed", _po.velocity.y);
-    }
-
-    public void OnTriggerEnter2D(Collider2D collision)
-    {
         
-    }
-
-    public void OnTriggerExit2D(Collider2D collision)
-    {
-       
+        //check for mapper input
+        if (Input.GetKeyDown(KeyCode.Escape) && Time.timeScale > 0)
+        {
+            Time.timeScale = 0.0f;
+            InputMapper.SetMappingData(inputKeyboardMapping, inputPadMapping);
+            SceneManager.LoadSceneAsync("inputMapper", LoadSceneMode.Additive);
+        }
     }
  
     public void ReactCollision(ref List<RaycastHit2D> contacts, PhysicObject.CollisionStage stage)

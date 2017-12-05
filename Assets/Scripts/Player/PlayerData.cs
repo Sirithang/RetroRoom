@@ -5,14 +5,14 @@ using UnityEngine;
 //TODO : there is a lot of redundancy between that class aand player input, consolidate that?
 public class PlayerData : MonoBehaviour
 {
-    public PlayerInput playerInput { get { return _playerInput; } }
+    public PlayerController playerController { get { return _playerController; } }
 
     public int maxLife;
 
     protected int _currentLife;
     protected Animator _animator;
     protected PhysicObject _physicObject;
-    protected PlayerInput _playerInput;
+    protected PlayerController _playerController;
     protected bool _invincible;
 
     readonly int HURT_HASH = Animator.StringToHash("hurt");
@@ -21,7 +21,7 @@ public class PlayerData : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _physicObject = GetComponent<PhysicObject>();
-        _playerInput = GetComponent<PlayerInput>();
+        _playerController = GetComponent<PlayerController>();
 
         SceneLinkedSMB<PlayerData>.Initialise(_animator, this);
     }
@@ -41,12 +41,12 @@ public class PlayerData : MonoBehaviour
 
         _currentLife -= 1;
         _animator.SetTrigger(HURT_HASH);
-        _playerInput.controlled = false;
-        _playerInput.physicObject.moveInput = direction * 0.5f;
+        _playerController.controlled = false;
+        _playerController.physicObject.moveInput = direction * 0.5f;
 
-        Vector2 velocity = _playerInput.physicObject.velocity;
-        velocity.y = _playerInput.jumpTakeoffSpeed;
-        _playerInput.physicObject.velocity = velocity;
+        Vector2 velocity = _playerController.physicObject.velocity;
+        velocity.y = _playerController.jumpTakeoffSpeed;
+        _playerController.physicObject.velocity = velocity;
     }
 
     public void SetInvincible(bool invincible)

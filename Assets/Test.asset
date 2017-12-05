@@ -66,8 +66,58 @@ MonoBehaviour:
     - 0
   - sprite:
     - {fileID: 0}
+    - {fileID: 21300032, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
+    - {fileID: 21300024, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
+    - {fileID: 0}
+    rotation:
+    - 0
+    - 0
+    - 0
+    - 0
+  - sprite:
+    - {fileID: 0}
+    - {fileID: 21300056, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
     - {fileID: 0}
     - {fileID: 0}
+    rotation:
+    - 0
+    - 0
+    - 0
+    - 0
+  - sprite:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    rotation:
+    - 0
+    - 0
+    - 0
+    - 0
+  - sprite:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    rotation:
+    - 0
+    - 0
+    - 0
+    - 0
+  - sprite:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    rotation:
+    - 0
+    - 0
+    - 0
+    - 0
+  - sprite:
+    - {fileID: 21300026, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
+    - {fileID: 21300006, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
+    - {fileID: 21300014, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
     - {fileID: 0}
     rotation:
     - 0
@@ -115,18 +165,8 @@ MonoBehaviour:
     - 0
     - 0
   - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rotation:
-    - 0
-    - 0
-    - 0
-    - 0
-  - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 21300034, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
+    - {fileID: 21300028, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
     - {fileID: 0}
     - {fileID: 0}
     rotation:
@@ -135,47 +175,7 @@ MonoBehaviour:
     - 0
     - 0
   - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rotation:
-    - 0
-    - 0
-    - 0
-    - 0
-  - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rotation:
-    - 0
-    - 0
-    - 0
-    - 0
-  - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rotation:
-    - 0
-    - 0
-    - 0
-    - 0
-  - sprite:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rotation:
-    - 0
-    - 0
-    - 0
-    - 0
-  - sprite:
-    - {fileID: 0}
+    - {fileID: 21300042, guid: bc23c4af754d4b24baa59e7ed4038c46, type: 3}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}

@@ -13,7 +13,7 @@ public class SMBPlayerDeath : SceneLinkedSMB<PlayerData>
     {
         base.OnSLStateNoTransitionUpdate(animator, stateInfo, layerIndex);
 
-        if (_MonoBehaviour.playerInput.physicObject.grounded)
+        if (_MonoBehaviour.playerController.physicObject.grounded)
             animator.SetTrigger("hurt");
     }
 
@@ -22,6 +22,6 @@ public class SMBPlayerDeath : SceneLinkedSMB<PlayerData>
         base.OnSLStateExit(animator, stateInfo, layerIndex);
 
         _MonoBehaviour.SetInvincible(false);
-        _MonoBehaviour.playerInput.controlled = true;
+        _MonoBehaviour.playerController.controlled = true;
     }
 }

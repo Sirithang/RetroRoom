@@ -58,6 +58,9 @@ public class PixelCamera2D : MonoBehaviour
             return;
 #endif
 
+        if(follow == null)
+            return;
+        
         RoomCell cell = RoomManager.Instance.GetCellFromWorld(follow.transform.position);
 
         if (cell == null)

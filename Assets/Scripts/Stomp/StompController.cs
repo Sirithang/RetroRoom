@@ -20,7 +20,7 @@ public class StompController : EnemyController, PhysicObject.ICollisionReceiver
             Die();
 
             //TODO : find a better way of detecting player
-            PlayerInput playerInput = obj.GetComponent<PlayerInput>();
+            PlayerController playerInput = obj.GetComponent<PlayerController>();
             if(playerInput != null)
             {
                 Vector2 velocity = obj.velocity;
