@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     protected List<Collider2D> _currentPlatformEffectors = new List<Collider2D>();
 
     private readonly int JUMP_BUTTON_HASH = InputMapping.NameToHash("Jump");
+    private readonly int ATTACK_BUTTON_HASH = InputMapping.NameToHash("Attack");
 
     void OnEnable()
     {
@@ -65,26 +66,38 @@ public class PlayerController : MonoBehaviour
         {
             KeyCode jumpKeyboardKeycode = inputKeyboardMapping.GetKeyCode(JUMP_BUTTON_HASH);
             KeyCode jumpPadKeycode = inputPadMapping.GetKeyCode(JUMP_BUTTON_HASH);
-            
+
+            KeyCode attackKeyboardKeycode = inputKeyboardMapping.GetKeyCode(ATTACK_BUTTON_HASH);
+            KeyCode attackPadKeycode = inputPadMapping.GetKeyCode(ATTACK_BUTTON_HASH);
+
             move.x = Input.GetAxis("Horizontal");
             move.y = Input.GetAxis("Vertical");
 
-            if ((Input.GetKeyDown(jumpKeyboardKeycode) || Input.GetKeyDown(jumpPadKeycode)) && (_po.grounded))
+            if (_po.grounded)
             {
-                bool jump = true;
-
-                if (jump)
+                if (Input.GetKeyDown(jumpKeyboardKeycode) || Input.GetKeyDown(jumpPadKeycode))
                 {
+                    bool jump = true;
 
-                    velocity.y = jumpTakeoffSpeed;
-                    _po.velocity = velocity;
+                    if (jump)
+                    {
+
+                        velocity.y = jumpTakeoffSpeed;
+                        _po.velocity = velocity;
+                    }
+                }
+                else if(Input.GetKeyDown(attackKeyboardKeycode) || Input.GetKeyDown(attackPadKeycode))
+                {
+                    _animator.SetTrigger("attacking");
                 }
             }
-            else if ((Input.GetKeyDown(jumpKeyboardKeycode) || Input.GetKeyDown(jumpPadKeycode)) )
+            else if ((Input.GetKeyUp(jumpKeyboardKeycode) || Input.GetKeyUp(jumpPadKeycode)))
             {
                 if (_po.velocity.y > 0)
                     _po.velocity = _po.velocity * 0.5f;
             }
+
+            
 
 
             move.y = 0;

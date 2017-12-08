@@ -352,6 +352,7 @@ MonoBehaviour:
   nameText: {fileID: 114957370657678344}
   keyboardKey: {fileID: 114000922952899682}
   padKey: {fileID: 114840056757563776}
+  entryBackground: {fileID: 114943730084591928}
 --- !u!114 &114919987716570076
 MonoBehaviour:
   m_ObjectHideFlags: 1

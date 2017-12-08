@@ -60,9 +60,15 @@ public class InputMapper : MonoBehaviour
 		}
 
 		_currentActive = 0;
+        _mapperEntries[_currentActive].SetSelected(true);
 	}
 
-	private void Update()
+    int mod(int x, int m)
+    {
+        return (x % m + m) % m;
+    }
+
+    private void Update()
 	{
 		if (KeyboardMapping == null)
 			return;
@@ -71,21 +77,25 @@ public class InputMapper : MonoBehaviour
 		{
 			float yAxis = Input.GetAxis("Vertical");
 
-			if (_axisThresold > 0 && yAxis < _axisThresold)
+			if (!_axisBackToZero && _axisThresold > 0 && yAxis < _axisThresold)
 				_axisBackToZero = true;
-			else if (_axisThresold < 0 && yAxis > _axisThresold)
+			else if (!_axisBackToZero && _axisThresold < 0 && yAxis > _axisThresold)
 				_axisBackToZero = true;
 
 			if (yAxis > 0.2f && _axisBackToZero)
 			{
-				_currentActive = (_currentActive - 1) % KeyboardMapping.buttons.Length;
-				_axisBackToZero = false;
+                _mapperEntries[_currentActive].SetSelected(false);
+                _currentActive = mod(_currentActive - 1, KeyboardMapping.buttons.Length);
+                _mapperEntries[_currentActive].SetSelected(true);
+                _axisBackToZero = false;
 				_axisThresold = 0.2f;
 			}
-			else if (yAxis < -0.2f)
+			else if (yAxis < -0.2f && _axisBackToZero)
 			{
-				_currentActive = (_currentActive + 1) % KeyboardMapping.buttons.Length;
-				_axisBackToZero = false;
+                _mapperEntries[_currentActive].SetSelected(false);
+                _currentActive = mod(_currentActive + 1, KeyboardMapping.buttons.Length);
+                _mapperEntries[_currentActive].SetSelected(true);
+                _axisBackToZero = false;
 				_axisThresold = -0.2f;
 			}
 

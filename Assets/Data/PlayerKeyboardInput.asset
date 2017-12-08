@@ -14,4 +14,6 @@ MonoBehaviour:
   buttons:
   - name: Jump
     key: 32
+  - name: Attack
+    key: 107
   UUID: 08297aca-76e3-4078-a379-ca54117d0afd

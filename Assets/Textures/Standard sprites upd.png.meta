@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: f47543195889c9546aca4eed81347bf1
-timeCreated: 1510934121
+timeCreated: 1512748058
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
@@ -23,6 +23,11 @@ TextureImporter:
     21300032: stomp_walk5
     21300034: Standard sprites upd_0
     21300036: hero_hurt
+    21300038: hero_punching_0
+    21300040: hero_punching_1
+    21300042: hero_punching_2
+    21300044: hero_punching_3
+    21300046: hero_punching_4
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -84,6 +89,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   - buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -93,6 +99,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   - buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -102,6 +109,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -364,6 +372,76 @@ TextureImporter:
         x: 18
         y: 81
         width: 13
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: hero_punching_0
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 256
+        width: 13
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: hero_punching_1
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 256
+        width: 13
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: hero_punching_2
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 256
+        width: 13
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: hero_punching_3
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 256
+        width: 12
+        height: 13
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: hero_punching_4
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 256
+        width: 10
         height: 13
       alignment: 7
       pivot: {x: 0.5, y: 0}
